@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { kebabCase } from 'lodash-es'
-import { useDialog, useLoadingBar, useMessage, useNotification } from 'naive-ui'
+import { dateZhCN, useDialog, useLoadingBar, useMessage, useNotification, zhCN } from 'naive-ui'
 import { useCssVar } from '@vueuse/core'
-import type { GlobalThemeOverrides } from 'naive-ui'
+import type { GlobalThemeOverrides, NDateLocale, NLocale } from 'naive-ui'
 
 import { useThemeStore } from '@/store'
 
@@ -24,6 +24,12 @@ const NaiveProviderContent = defineComponent({
 })
 
 const themStore = useThemeStore()
+const lang = reactive({
+  zhCN,
+  dateZhCN,
+  locale: ref<NLocale | null>(null),
+  dateLocale: ref<NDateLocale | null>(null),
+})
 
 type ThemeVars = Exclude<GlobalThemeOverrides['common'], undefined>
 type ThemeVarsKeys = keyof ThemeVars
@@ -66,7 +72,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <n-config-provider wh-full :theme-overrides="themStore.naiveThemeOverrides" :theme="themStore.naiveTheme">
+  <n-config-provider wh-full :theme-overrides="themStore.naiveThemeOverrides" :theme="themStore.naiveTheme" :locale="lang.locale" :date-locale="lang.dateLocale">
     <n-loading-bar-provider>
       <n-dialog-provider>
         <n-notification-provider>
