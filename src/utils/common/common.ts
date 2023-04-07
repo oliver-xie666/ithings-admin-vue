@@ -11,3 +11,8 @@ export function formatDateTime(time: Time, format = 'YYYY-MM-DD HH:mm:ss'): stri
 export function formatDate(date: Time = undefined, format = 'YYYY-MM-DD') {
   return formatDateTime(date, format)
 }
+
+// 获取当前的时间戳，单位为 毫秒
+export const getTimestamp = () => {
+  return `${new Date().getTime()}`
+}

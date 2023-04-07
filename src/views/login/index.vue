@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import api from './api'
+import MD5 from 'crypto-js/md5'
+import { postApiV1SystemUserLogin } from '@/api/yonghuguanli'
 import { getLocal, removeLocal, setLocal, setToken } from '@/utils'
 import bgImg from '@/assets/images/login_bg.webp'
 import { addDynamicRoutes } from '@/router'
@@ -37,7 +38,7 @@ async function handleLogin() {
   }
   try {
     loging.value = true
-    const res: any = await api.login({ name, password: password.toString() })
+    const res: any = await postApiV1SystemUserLogin({ pwdType: 2, loginType: 'pwd', userID: name, password: MD5(password).toString() })
     window.$notification?.success({ title: '登录成功！', duration: 2500 })
     setToken(res.data.token)
     if (isRemember.value)

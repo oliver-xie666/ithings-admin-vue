@@ -1,19 +1,16 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import axios from 'axios'
-import { reqReject, reqResolve, resReject, resResolve } from './interceptors'
+import { errorHandler, reqResolve, resResolve } from './interceptors'
 
-export function createAxios(options = {}) {
-  const defaultOptions = {
-    timeout: 12000,
-  }
-  const service = axios.create({
-    ...defaultOptions,
-    ...options,
-  })
-  service.interceptors.request.use(reqResolve, reqReject)
-  service.interceptors.response.use(resResolve, resReject)
-  return service
+const defaultOptions = {
+  timeout: 12000,
 }
-
-export const request = createAxios({
+export const request = axios.create({
+  ...defaultOptions,
   baseURL: import.meta.env.VITE_BASE_API,
 })
+
+// @ts-expect-error
+request.interceptors.request.use(reqResolve, errorHandler)
+request.interceptors.response.use(resResolve, errorHandler)
+

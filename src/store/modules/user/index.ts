@@ -3,6 +3,7 @@ import { removeToken, toLogin } from '@/utils'
 import { usePermissionStore, useTabStore } from '@/store'
 import { resetRouter } from '@/router'
 import api from '@/api'
+import { router } from '~/src/router'
 
 interface UserInfo {
   id?: string
@@ -56,6 +57,7 @@ export const useUserStore = defineStore('user', {
       resetTabs()
       resetRouter()
       this.$reset()
+      router.push({ name: 'login', replace: true })
       toLogin()
     },
     setUserInfo(userInfo = {}) {
