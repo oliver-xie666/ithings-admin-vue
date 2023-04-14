@@ -18,6 +18,7 @@ export function getLocal<T>(key: string) {
   const json = window.localStorage.getItem(key)
   if (json) {
     let storageData: StorageData | null = null
+
     try {
       storageData = decrypto(json)
     }

@@ -1,65 +1,79 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-import MD5 from 'crypto-js/md5'
-import { postApiV1SystemUserLogin } from '@/api/yonghuguanli'
-import { getLocal, removeLocal, setLocal, setToken } from '@/utils'
+import type { FormInst, FormRules } from 'naive-ui/es/form/src/interface'
+import type { LoginInfo } from './login'
+import { postApiV1SystemUserCaptcha } from '@/api/yonghuguanli'
 import bgImg from '@/assets/images/login_bg.webp'
-import { addDynamicRoutes } from '@/router'
+import { useUserStore } from '~/src/store'
 
 const title: string = import.meta.env.VITE_APP_TITLE
-
-const router = useRouter()
 const route = useRoute()
 const query = route.query
 
-interface LoginInfo {
-  name: string
-  password: string
-}
-
 const loginInfo = ref<LoginInfo>({
-  name: '',
-  password: '',
+  userID: 'administrator',
+  password: 'iThings666',
+  code: '',
+  codeID: '',
+  captchaURL: '',
+
 })
 
-const localLoginInfo = getLocal('loginInfo') as LoginInfo
-if (localLoginInfo) {
-  loginInfo.value.name = localLoginInfo.name || ''
-  loginInfo.value.password = localLoginInfo.password || ''
+const formRef = ref<FormInst | null>(null)
+
+const rules: FormRules = {
+  userID: [
+    {
+      required: true,
+      message: '用户名是必填项！',
+    },
+  ],
+  password: [
+    {
+      required: true,
+      message: '密码是必填项！',
+    },
+  ],
+  code: [
+    {
+      required: true,
+      message: '请输入验证码！',
+    },
+  ],
 }
 
-const loging = ref<boolean>(false)
-const isRemember = useStorage('isRemember', false)
-async function handleLogin() {
-  const { name, password } = loginInfo.value
-  if (!name || !password) {
-    window.$message?.warning('请输入用户名和密码')
-    return
-  }
-  try {
-    loging.value = true
-    const res: any = await postApiV1SystemUserLogin({ pwdType: 2, loginType: 'pwd', userID: name, password: MD5(password).toString() })
-    window.$notification?.success({ title: '登录成功！', duration: 2500 })
-    setToken(res.data.token)
-    if (isRemember.value)
-      setLocal('loginInfo', { name, password })
-    else
-      removeLocal('loginInfo')
+const userStore = useUserStore()
 
-    await addDynamicRoutes()
-    if (query.redirect) {
-      const path = query.redirect as string
-      Reflect.deleteProperty(query, 'redirect')
-      router.push({ path, query })
+// 获取验证码
+const loginVerify = () => {
+  const body = {
+    type: 'sms',
+    data: '',
+    use: 'login',
+  }
+
+  postApiV1SystemUserCaptcha(body).then((res) => {
+    if (typeof res.data === 'object') {
+      loginInfo.value.codeID = res.data.codeID ?? ''
+      loginInfo.value.captchaURL = res?.data?.url ?? ''
+    }
+  })
+  window.$message?.success('刷新验证码成功！')
+}
+loginVerify()
+
+async function handleLogin() {
+  formRef.value?.validate(async (err) => {
+    if (!err) {
+      const flag = await userStore.loginIn(loginInfo.value, query)
+      if (!flag)
+        loginVerify()
     }
     else {
-      router.push('/')
+      window.$message?.error('请正确填写登录信息')
+      loginVerify()
+      return false
     }
-  }
-  catch (error) {
-    console.error(error)
-  }
-  loging.value = false
+  })
 }
 </script>
 
@@ -70,37 +84,73 @@ async function handleLogin() {
         <img src="@/assets/images/login_banner.webp" w-full alt="login_banner">
       </div>
 
-      <div w-320 flex-col px-20 py-35>
+      <div w-400 flex-col px-20 py-35>
         <h5 f-c-c text-24 font-normal color="#6a6a6a">
-          <icon-custom-logo mr-30 text-50 color-primary />{{ title }}
+          <img src="@/assets/logo/Group.png" alt="logo" mr-30 text-50 color-primary w-50px>
+          {{ title }}
         </h5>
         <div mt-30>
-          <n-input
-            v-model:value="loginInfo.name"
-            autofocus
-            class="text-16 items-center h-50 pl-10"
-            placeholder="admin"
-            :maxlength="20"
-          />
-        </div>
-        <div mt-30>
-          <n-input
-            v-model:value="loginInfo.password"
-            class="text-16 items-center h-50 pl-10"
-            type="password"
-            show-password-on="mousedown"
-            placeholder="123456"
-            :maxlength="20"
-            @keydown.enter="handleLogin"
-          />
+          <n-form ref="formRef" :model="loginInfo" :rules="rules">
+            <n-form-item path="userID" h-60>
+              <n-input
+                v-model:value="loginInfo.userID"
+                autofocus
+                class="text-16 items-center h-40 pl-4 border-rounded-8"
+                placeholder="请输入用户名"
+                clearable
+              >
+                <template #prefix>
+                  <TheIcon icon="ant-design:user-outlined" :size="18" />
+                  <!-- <n-icon :component="renderIcon('ant-design:user-outlined', { size: 18 })" /> -->
+                </template>
+              </n-input>
+            </n-form-item>
+            <n-form-item path="password" h-60>
+              <n-input
+                v-model:value="loginInfo.password"
+
+                class="text-16 items-center h-40 pl-4 border-rounded-8"
+                type="password"
+                show-password-on="click"
+                placeholder="请输入密码"
+                clearable
+              >
+                <template #prefix>
+                  <TheIcon icon="ant-design:lock-outlined" :size="18" />
+                </template>
+              </n-input>
+            </n-form-item>
+            <n-form-item path="openCaptcha" h-60>
+              <n-input
+                v-model:value="loginInfo.code"
+                class="text-16 items-center h-40 pl-4 mr-30 border-rounded-8"
+                placeholder="请输入验证码"
+                :maxlength="6"
+                @keydown.enter="handleLogin"
+              >
+                <template #prefix>
+                  <TheIcon icon="ant-design:font-colors-outlined" :size="18" />
+                </template>
+              </n-input>
+              <div border-rounded-8 h-40 class="vPic">
+                <img
+                  v-middle
+                  w-full
+                  :src="loginInfo.captchaURL"
+                  alt="请输入验证码"
+                  @click="loginVerify()"
+                >
+              </div>
+            </n-form-item>
+          </n-form>
         </div>
 
         <div mt-20>
-          <n-checkbox :checked="isRemember" label="记住我" :on-update:checked="(val:boolean) => (isRemember = val)" />
+          <n-checkbox class="checkboxed" label="记住我" />
         </div>
 
         <div mt-20>
-          <n-button w-full h-50 rounded-5 text-16 type="primary" :loading="loging" @click="handleLogin">
+          <n-button border-rounded-8 w-full h-40 text-16 type="primary" :loading="loging" @click="handleLogin">
             登录
           </n-button>
         </div>
@@ -109,3 +159,13 @@ async function handleLogin() {
   </AppPage>
 </template>
 
+<style lang="scss" scoped>
+  .vPic {
+  width: 60%;
+  background: #ccc;
+}
+
+::v-deep(.checkboxed.n-checkbox .n-checkbox-box){
+  --n-border-radius: 4px;
+}
+</style>

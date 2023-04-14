@@ -32,7 +32,7 @@ function handleSelect(key: string) {
   <n-dropdown :options="options" @select="handleSelect">
     <div flex items-center cursor-pointer>
       <img :src="userStore.avatar" mr10 w-35 h-35 rounded-full>
-      <span hidden sm:block>{{ userStore.name }}</span>
+      <span hidden sm:block>{{ userStore.nickName }}</span>
     </div>
   </n-dropdown>
 </template>

@@ -157,6 +157,7 @@ export async function postApiV1SystemUserLogin(
   options?: { [key: string]: any },
 ) {
   return request<{
+    [x: string]: any
     code: number
     msg: string
     data: {
