@@ -24,7 +24,7 @@ const userStore = useUserStore()
             <img rounded-full width="60" :src="userStore.avatar">
             <div ml-20>
               <p text-16>
-                Hello, {{ userStore.name }} ！
+                Hello, {{ userStore.nickName }} ！
               </p>
               <n-gradient-text
                 mt-5 text-12 op-60
