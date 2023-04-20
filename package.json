@@ -5,6 +5,9 @@
     "email": "a1736144002@gmail.com",
     "url": "https://github.com/oliver-xie666"
   },
+  "engines": {
+    "node": ">=16.14 <18.0.0"
+  },
   "repository": {
     "url": "https://github.com/oliver-xie666/ithings-admin-vue"
   },

@@ -66,7 +66,7 @@ const userStore = useUserStore()
             :key="i"
             w-300 flex-shrink-0 mt-10 mb-10 cursor-pointer
             hover:card-shadow
-            title="奇思Admin"
+            title="ithings-admin-vue"
             size="small"
           >
             <p op-60>
