@@ -53,7 +53,7 @@ export const useUserStore = defineStore('user', {
   = 'https://p26-passport.byteacctimg.com/img/user-avatar/d7e592d60c58f00ecb4957f1de203dfa~300x300.image'
 
       try {
-        const res = await postApiV1SystemUserRead({ uid: getUID() as string })
+        const res = await postApiV1SystemUserRead({ userID: getUID() as string })
         if (res?.code === 200) {
           const { userName, nickName, role } = res.data
           const roleArr: Array<string> = []
@@ -76,7 +76,7 @@ export const useUserStore = defineStore('user', {
       if (res.code === 200) {
         window.$message?.success('登录成功！', { duration: 2500 })
         setToken(res.data.token.accessToken)
-        setUID(res?.data?.info?.uid ?? '')
+        setUID(res?.data?.info?.userID ?? '')
         await addDynamicRoutes()
         if (query.redirect) {
           const path = query.redirect as string

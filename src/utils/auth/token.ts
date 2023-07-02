@@ -41,9 +41,11 @@ export async function refreshAccessToken() {
 }
 
 export const setUID = (uid: string) => {
-  return setLocal(`${TOKEN_PREFIX}-UID`, uid)
+  // return setLocal(`${TOKEN_PREFIX}-UID`, uid)
+  return localStorage.setItem(`${TOKEN_PREFIX}-UID`, uid)
 }
 
 export const getUID = () => {
-  return getLocal(`${TOKEN_PREFIX}-UID`) ?? ''
+  // return getLocal(`${TOKEN_PREFIX}-UID`) ?? ''
+  return localStorage.getItem(`${TOKEN_PREFIX}-UID`) ?? ''
 }
