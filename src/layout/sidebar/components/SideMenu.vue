@@ -39,6 +39,7 @@ interface MennuItem {
   icon: (() => import('vue').VNodeChild) | null
   order: number
   children?: Array<MennuItem>
+  show?: boolean
 }
 
 function getMenuItem(route: RouteType, basePath = ''): MennuItem {
@@ -48,6 +49,7 @@ function getMenuItem(route: RouteType, basePath = ''): MennuItem {
     path: resolvePath(basePath, route.path),
     icon: getIcon(route.meta),
     order: route.meta?.order || 0,
+    show: !route.meta?.isHidden,
   }
 
   const visibleChildren = route.children ? route.children.filter((item: RouteType) => item.name && !item.isHidden) : []
@@ -64,6 +66,7 @@ function getMenuItem(route: RouteType, basePath = ''): MennuItem {
       path: resolvePath(menuItem.path, singleRoute.path),
       icon: getIcon(singleRoute.meta),
       order: menuItem.order,
+      show: !route.meta?.isHidden,
     }
     const visibleItems = singleRoute.children ? singleRoute.children.filter((item: RouteType) => item.name && !item.isHidden) : []
 

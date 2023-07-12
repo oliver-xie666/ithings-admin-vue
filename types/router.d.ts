@@ -7,6 +7,7 @@ interface Meta {
   order?: number
   role?: Array<string>
   requireAuth?: boolean
+  isHidden?: boolean
 }
 
 interface RouteItem {

@@ -2,12 +2,11 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: '123',
+  name: 'ProductDetail',
 })
 </script>
 
 <script lang="ts" setup>
-
 </script>
 
 <template>
