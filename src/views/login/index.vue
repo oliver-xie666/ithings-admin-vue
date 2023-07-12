@@ -10,7 +10,7 @@ const route = useRoute()
 const query = route.query
 
 const loginInfo = ref<LoginInfo>({
-  userID: 'administrator',
+  account: 'administrator',
   password: 'iThings666',
   code: '',
   codeID: '',
@@ -21,7 +21,7 @@ const loginInfo = ref<LoginInfo>({
 const formRef = ref<FormInst | null>(null)
 
 const rules: FormRules = {
-  userID: [
+  account: [
     {
       required: true,
       message: '用户名是必填项！',
@@ -93,7 +93,7 @@ async function handleLogin() {
           <n-form ref="formRef" :model="loginInfo" :rules="rules">
             <n-form-item path="userID" h-60>
               <n-input
-                v-model:value="loginInfo.userID"
+                v-model:value="loginInfo.account"
                 autofocus
                 class="text-16 items-center h-40 pl-4 border-rounded-8"
                 placeholder="请输入用户名"

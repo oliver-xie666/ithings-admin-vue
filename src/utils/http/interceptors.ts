@@ -1,8 +1,9 @@
+/* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import type { AxiosResponse } from 'axios'
 import { getLocal } from '../storage'
 import { getTimestamp } from '../common'
-import { GUIDKEY } from '../common/const'
+import { GUIDKEY } from '../index'
 import { AxiosRejectError, resolveResError } from './helpers'
 import { SETTOKENKEY, getToken, setSetToken, setToken } from '~/src/utils/auth/token'
 import { emitter } from '@/utils/common/bus'
@@ -43,7 +44,6 @@ export function reqResolve(config: RequestConfig) {
   config.headers[GUIDKEY] = getTimestamp()
   const token = getToken()
   if (token && config.headers)
-  // @ts-expect-error
     config.headers[TOKENKEY] = token
 
   const IThingsSetTokenValue = getLocal(SETTOKENKEY)
@@ -78,7 +78,7 @@ export const errorHandler = (error: { response: Response }): Promise<Response> =
     }
   }
   else if (!response) {
-    window.$notification?.error({ content: '您的网络发生异常，无法连接服务器' })
+    window['$notification']?.error({ content: '您的网络发生异常，无法连接服务器' })
   }
 
   return Promise.reject(error)
@@ -125,7 +125,7 @@ export function resResolve(response: AxiosResponse) {
     const message = resolveResError(code, data?.message ?? statusText)
 
     const { noNeedTip } = config as RequestConfig
-    !noNeedTip && window.$message?.error(message)
+    !noNeedTip && window['$message']?.error(message)
     return Promise.reject(new AxiosRejectError({ code, message, data: data || response }))
   }
   return Promise.resolve(data.msg ? data : response)

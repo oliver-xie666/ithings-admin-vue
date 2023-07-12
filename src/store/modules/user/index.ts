@@ -71,8 +71,8 @@ export const useUserStore = defineStore('user', {
       }
     },
     async loginIn(loginInfo: LoginInfo, query: LocationQuery): Promise<boolean> {
-      const { userID, password, codeID, code } = loginInfo
-      const res = await postApiV1SystemUserLogin({ pwdType: 2, loginType: 'pwd', userID, password: MD5(password).toString(), codeID, code })
+      const { account, password, codeID, code } = loginInfo
+      const res = await postApiV1SystemUserLogin({ pwdType: 2, loginType: 'pwd', account, password: MD5(password).toString(), codeID, code })
       if (res.code === 200) {
         window.$message?.success('登录成功！', { duration: 2500 })
         setToken(res.data.token.accessToken)

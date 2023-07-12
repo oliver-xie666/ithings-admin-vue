@@ -1,5 +1,5 @@
 export interface LoginInfo {
-  userID: string
+  account: string
   password: string
   code: string
   codeID: string

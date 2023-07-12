@@ -1,3 +1,4 @@
+<!-- eslint-disable dot-notation -->
 <script setup lang="ts">
 import { kebabCase } from 'lodash-es'
 import { dateZhCN, useDialog, useLoadingBar, useMessage, useNotification, zhCN } from 'naive-ui'
@@ -8,10 +9,10 @@ import { useThemeStore } from '@/store'
 
 // 挂载naive组件的方法至window, 以便在全局使用
 function setupNaiveTools() {
-  window.$loadingBar = useLoadingBar()
-  window.$message = useMessage()
-  window.$dialog = useDialog()
-  window.$notification = useNotification()
+  window['$loadingBar'] = useLoadingBar()
+  window['$message'] = useMessage()
+  window['$dialog'] = useDialog()
+  window['$notification'] = useNotification()
 }
 
 const NaiveProviderContent = defineComponent({
@@ -27,8 +28,8 @@ const themStore = useThemeStore()
 const lang = reactive({
   zhCN,
   dateZhCN,
-  locale: ref<NLocale | null>(null),
-  dateLocale: ref<NDateLocale | null>(null),
+  locale: ref<NLocale | null>(zhCN),
+  dateLocale: ref<NDateLocale | null>(dateZhCN),
 })
 
 type ThemeVars = Exclude<GlobalThemeOverrides['common'], undefined>
